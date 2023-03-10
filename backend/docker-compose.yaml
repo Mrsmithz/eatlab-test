@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  inventory:
+    build:
+      context: ./inventory
+    ports:
+      - 3001:3000
+    environment:
+      - DB_URI=mongodb://admin:1234@inventory-db/test
+    restart: unless-stopped
+  product:
+    build:
+      context: ./product
+    ports:
+      - 3002:3000
+    environment:
+      - DB_URI=mongodb://admin:1234@product-db/test
+      - INVENTORY_URI=http://inventory:3000/inventory/products
+    restart: unless-stopped
+  order:
+    build:
+      context: ./order
+    ports:
+      - 3003:3000
+    environment:
+      - DB_URI=mongodb://admin:1234@order-db/test
+      - INVENTORY_URI=http://inventory:3000/inventory
+    restart: unless-stopped
+  inventory-db:
+    image: bitnami/mongodb
+    environment:
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: 1234
+      MONGODB_DATABASE: test
+      MONGODB_ROOT_PASSWORD: root
+  product-db:
+    image: bitnami/mongodb
+    environment:
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: 1234
+      MONGODB_DATABASE: test
+      MONGODB_ROOT_PASSWORD: root
+  order-db:
+    image: bitnami/mongodb
+    environment:
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: 1234
+      MONGODB_DATABASE: test
+      MONGODB_ROOT_PASSWORD: root
